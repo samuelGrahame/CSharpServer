@@ -285,6 +285,10 @@ namespace cSharpServer
                 for (int i = 0; i < count;i++)
                 {
                     IClientRequest Request = CurrentServer.GetRequest(buff.ReadByte());
+                    // if a IClientRequest to close. we need to handle by not reading and writing back!
+                    if (!this.TcpConnection.Connected)
+                        return false;
+
                     byte[] data = buff.ReadByteArray(buff.ReadInt());
                     if(Request != null)
                     {
