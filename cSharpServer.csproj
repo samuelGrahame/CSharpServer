@@ -60,6 +60,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="Firewall\IAddressEqual.cs" />
+    <Compile Include="Firewall\IpList.cs" />
+    <Compile Include="Firewall\Firewall.cs" />
+    <Compile Include="Firewall\IpAddress.cs" />
+    <Compile Include="Firewall\IpAddressRange.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
