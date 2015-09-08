@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,30 +21,36 @@ namespace cSharpServer
         private int _pointer;
         public byte[] ByteBuffer;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
             return Helper.DefaultEncoding.GetString(ByteBuffer, 0, ByteBuffer.Length);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BinaryBuffer(string data)
             : this(Helper.DefaultEncoding.GetBytes(data))
         {
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BinaryBuffer()
         {
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BinaryBuffer(byte[] data)
             : this(ref data)
         {
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BinaryBuffer(ref byte[] data)
         {
             ByteBuffer = data;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void IncrementPointer(int add)
         {
             if (add < 0)
@@ -57,21 +64,25 @@ namespace cSharpServer
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetPointer()
         {
             return _pointer;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetString(ref byte[] buffer)
         {
             return Helper.DefaultEncoding.GetString(buffer, 0, buffer.Length);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string GetString(byte[] buffer)
         {
             return GetString(ref buffer);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BeginWrite()
         {
             if (_inRead)
@@ -83,6 +94,7 @@ namespace cSharpServer
             _newBytes = new List<byte>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(float value)
         {
             if (!_inWrite)
@@ -92,6 +104,7 @@ namespace cSharpServer
             _newBytes.AddRange(BitConverter.GetBytes(value));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(byte value)
         {
             if (!_inWrite)
@@ -101,6 +114,7 @@ namespace cSharpServer
             _newBytes.Add(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(int value)
         {
             if (!_inWrite)
@@ -111,6 +125,7 @@ namespace cSharpServer
             _newBytes.AddRange(BitConverter.GetBytes(value));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(long value)
         {
             if (!_inWrite)
@@ -130,17 +145,20 @@ namespace cSharpServer
             _newBytes.AddRange(byteArray);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int UncommitedLength()
         {
             return _newBytes == null ? 0 : _newBytes.Count;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteField(string value)
         {
             Write(value.Length);
             Write(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(string value)
         {
             if (!_inWrite)
@@ -151,6 +169,7 @@ namespace cSharpServer
             _newBytes.AddRange(byteArray);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(decimal value)
         {
             if (!_inWrite)
@@ -165,6 +184,7 @@ namespace cSharpServer
             Write(intArray[3]);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetInt(int value, int pos)
         {
             byte[] byteInt = BitConverter.GetBytes(value);
@@ -174,6 +194,7 @@ namespace cSharpServer
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetLong(long value, int pos)
         {
             byte[] byteInt = BitConverter.GetBytes(value);
@@ -183,11 +204,13 @@ namespace cSharpServer
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(byte[] value)
         {
             Write(ref value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(ref byte[] value)
         {
             if (!_inWrite)
@@ -197,6 +220,7 @@ namespace cSharpServer
             _newBytes.AddRange(value);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void EndWrite()
         {
             if (ByteBuffer != null)
@@ -208,12 +232,14 @@ namespace cSharpServer
             _inWrite = false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void EndRead()
         {
             _inRead = false;
             _pointer = 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void BeginRead()
         {
             if (_inWrite)
@@ -224,6 +250,7 @@ namespace cSharpServer
             _pointer = 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte ReadByte()
         {
             if (!_inRead)
@@ -237,6 +264,7 @@ namespace cSharpServer
             return ByteBuffer[_pointer++];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int ReadInt()
         {
             if (!_inRead)
@@ -253,6 +281,7 @@ namespace cSharpServer
             return BitConverter.ToInt32(ByteBuffer, startPointer);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float[] ReadFloatArray()
         {
             float[] dataFloats = new float[ReadInt()];
@@ -263,6 +292,7 @@ namespace cSharpServer
             return dataFloats;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float ReadFloat()
         {
             if (!_inRead)
@@ -279,6 +309,7 @@ namespace cSharpServer
             return BitConverter.ToSingle(ByteBuffer, startPointer);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public decimal ReadDecimal()
         {
             if (!_inRead)
@@ -296,6 +327,7 @@ namespace cSharpServer
 			});
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long ReadLong()
         {
             if (!_inRead)
@@ -312,11 +344,13 @@ namespace cSharpServer
             return BitConverter.ToInt64(ByteBuffer, startPointer);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadString(int size)
         {
             return Helper.DefaultEncoding.GetString(ReadByteArray(size), 0, size);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte[] ReadByteArray(int size)
         {
             if (!_inRead)
@@ -336,6 +370,7 @@ namespace cSharpServer
             return newBuffer;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool EofBuffer(int over = 1)
         {
             return ByteBuffer == null || ((_pointer + over) > ByteBuffer.Length);
