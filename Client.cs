@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Sockets;
-using buffer = AppLibrary.Buffer;
 
 namespace cSharpServer
 {
@@ -58,7 +57,7 @@ namespace cSharpServer
         /// <returns></returns>
         public byte[] ReadBuffer(NetworkStream stream)
         {
-            buffer buff = new buffer();
+            BinaryBuffer buff = new BinaryBuffer();
 
             buff.BeginWrite();
 
@@ -79,7 +78,7 @@ namespace cSharpServer
 
             int Contentlength = BitConverter.ToInt32(buff.ByteBuffer, 0);
 
-            buff = new buffer();
+            buff = new BinaryBuffer();
 
             int bytesRead = 1;
             byte[] buffer = new byte[8192];
@@ -110,7 +109,7 @@ namespace cSharpServer
         public bool Login(byte[] data)
         {            
             // what is the username and password?
-            buffer buff = new buffer(data);
+            BinaryBuffer buff = new BinaryBuffer(data);
             // what is the username?
             // what is the password?
             buff.BeginRead();
@@ -177,7 +176,7 @@ namespace cSharpServer
         /// </summary>
         /// <param name="result"></param>
         /// <param name="buff"></param>
-        public void ResultParseBack(DataTable result, ref buffer buff)
+        public void ResultParseBack(DataTable result, ref BinaryBuffer buff)
         {            
             Stopwatch swa = Stopwatch.StartNew();
             DataTable dt = (DataTable)result;
@@ -249,7 +248,7 @@ namespace cSharpServer
         /// </summary>
         /// <param name="result"></param>
         /// <param name="buff"></param>
-        public void ResultParseBack(object result, ref buffer buff)
+        public void ResultParseBack(object result, ref BinaryBuffer buff)
         {
             if(result == null)
             {
@@ -273,13 +272,13 @@ namespace cSharpServer
         {
             try
             {
-                buffer buff = new buffer(ReadBuffer(stream));
+                BinaryBuffer buff = new BinaryBuffer(ReadBuffer(stream));
                 
                 buff.BeginRead();
 
-                int count = buff.ReadInt();                
+                int count = buff.ReadInt();
 
-                buffer writeBuff = new buffer();
+                BinaryBuffer writeBuff = new BinaryBuffer();
 
                 writeBuff.BeginWrite();
 
@@ -289,7 +288,7 @@ namespace cSharpServer
                     byte[] data = buff.ReadByteArray(buff.ReadInt());
                     if(Request != null)
                     {
-                        data = Request.Process(new buffer(data), this);
+                        data = Request.Process(new BinaryBuffer(data), this);
                         writeBuff.Write(data.Length);
                         writeBuff.Write(data);
                     }

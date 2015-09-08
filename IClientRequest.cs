@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using buffer = AppLibrary.Buffer;
 
 namespace cSharpServer
 {
@@ -17,6 +16,6 @@ namespace cSharpServer
         /// <param name="data"></param>
         /// <param name="client"></param>
         /// <returns></returns>
-        byte[] Process(buffer data, Client client);
+        byte[] Process(BinaryBuffer data, Client client);
     }
 }
