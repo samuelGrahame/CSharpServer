@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using cSharpServer.Features;
 
 namespace cSharpServer
 {
@@ -66,7 +67,7 @@ namespace cSharpServer
         /// <summary>
         /// This will stop people from connection. Without having permission to admin to add ipaddress.
         /// </summary>
-        public Firewall.Firewall ServerFirewall = new Firewall.Firewall();
+        public Firewall ServerFirewall = new Firewall();
 
         /// <summary>
         /// Start the server. use handle commands to keep the server alive. (Program)
@@ -96,8 +97,8 @@ namespace cSharpServer
         /// <param name="client"></param>
         public void JoinClient(Client client)
         {
-            if (!ServerFirewall.ClientAllowed(new IPAddress(client.TcpConnection.Client.LocalEndPoint.ToString())))
-                break;
+            if (!ServerFirewall.ClientAllowed(new IpAddress(client.TcpConnection.Client.LocalEndPoint.ToString())))
+                return;
 
             bool Added = false;
             lock (ServerClients)
