@@ -11,6 +11,12 @@ namespace cSharpServer.Firewall
         public IpAddress BeginAddress;
         public IpAddress EndAddress;
 
+        public IpAddressRange(IpAddress a, IpAddress b)
+        {
+            BeginAddress = a;
+            EndAddress = b;
+        }
+
         public bool EqualOrInRange(IAddressEqual address)
         {
             var ip = address as IpAddress;

@@ -38,7 +38,7 @@ namespace cSharpServer.Firewall
                 if (!BlackList.InList(address))
                     return false;
             }
-
+            return true;
         }
     }
 }

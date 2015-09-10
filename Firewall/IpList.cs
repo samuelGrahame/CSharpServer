@@ -8,7 +8,19 @@ namespace cSharpServer.Firewall
 {
     public class IpList
     {
-        List<IAddressEqual> IpAddress = new List<IAddressEqual>();        
+        List<IAddressEqual> IpAddress = new List<IAddressEqual>();    
+    
+        public void Add(params IAddressEqual[] address)
+        {
+            IpAddress.AddRange(address);
+        }
+
+        public void Remove(params int[] index)
+        {
+            for (int i = 0, y = index.Length; i < y; i++)
+                IpAddress[index[i]] = null;
+            IpAddress.RemoveAll(null);
+        }
 
         public bool IsEmpty()
         {

@@ -64,6 +64,11 @@ namespace cSharpServer
         public long ServerMaxSessionId = 0L;
 
         /// <summary>
+        /// This will stop people from connection. Without having permission to admin to add ipaddress.
+        /// </summary>
+        public Firewall.Firewall ServerFirewall = new Firewall.Firewall();
+
+        /// <summary>
         /// Start the server. use handle commands to keep the server alive. (Program)
         /// </summary>
         /// <returns></returns>
@@ -91,6 +96,9 @@ namespace cSharpServer
         /// <param name="client"></param>
         public void JoinClient(Client client)
         {
+            if (!ServerFirewall.ClientAllowed(new IPAddress(client.TcpConnection.Client.LocalEndPoint.ToString())))
+                break;
+
             bool Added = false;
             lock (ServerClients)
             {
