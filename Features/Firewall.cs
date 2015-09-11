@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +22,7 @@ namespace cSharpServer.Features
         public IpList BlackList = new IpList();
         public IpList WhiteList = new IpList();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ClientAllowed(IpAddress address)
         {
             if (Rule == FirewallRule.None)

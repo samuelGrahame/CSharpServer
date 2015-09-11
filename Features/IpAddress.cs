@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,6 +23,8 @@ namespace cSharpServer.Features
                 byte.Parse(array[4])}, 0);
         }
         public int Value;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool EqualOrInRange(IAddressEqual address)
         {
             var ip = address as IpAddress;
