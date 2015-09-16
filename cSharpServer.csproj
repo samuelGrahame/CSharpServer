@@ -54,6 +54,9 @@
     <Compile Include="BinaryBuffer.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="ClientArgument.cs" />
+    <Compile Include="ClientLibrary\ClientConnection.cs" />
+    <Compile Include="ClientLibrary\ClientDataRequest.cs" />
+    <Compile Include="ClientLibrary\DataVariable.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="IClientLogin.cs" />

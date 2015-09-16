@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -378,6 +381,250 @@ namespace cSharpServer
         public bool EofBuffer(int over = 1)
         {
             return ByteBuffer == null || ((_pointer + over) > ByteBuffer.Length);
+        }
+
+        public static DataTable ConvertBlobToDataTable(ref byte[] data)
+        {
+            DataTable dt = null;
+
+            if (data == null || data.Length == 0)
+                return dt;
+
+            BinaryBuffer buff = new BinaryBuffer(data);
+
+            buff.BeginRead();
+
+            buff.ReadInt();
+
+            int ColumnCount = buff.ReadInt();
+
+            if (ColumnCount > 0)
+            {
+                dt = new DataTable();
+                TypeCode[] types = new TypeCode[ColumnCount];
+                for (int i = 0; i < ColumnCount; i++)
+                {
+                    string colName = buff.ReadString(buff.ReadInt());
+                    TypeCode type = (TypeCode)buff.ReadByte();
+                    types[i] = type;
+
+                    switch (type)
+                    {
+                        case TypeCode.Boolean:
+                            dt.Columns.Add(colName, typeof(Boolean));
+                            break;
+                        case TypeCode.Byte:
+                            dt.Columns.Add(colName, typeof(byte));
+                            break;
+                        case TypeCode.Char:
+                            dt.Columns.Add(colName, typeof(char));
+                            break;
+                        case TypeCode.DateTime:
+                            dt.Columns.Add(colName, typeof(DateTime));
+                            break;
+                        case TypeCode.DBNull:
+                            dt.Columns.Add(colName);
+                            break;
+                        case TypeCode.Decimal:
+                            dt.Columns.Add(colName, typeof(decimal));
+                            break;
+                        case TypeCode.Double:
+                            dt.Columns.Add(colName, typeof(double));
+                            break;
+                        case TypeCode.Empty:
+                            dt.Columns.Add(colName);
+                            break;
+                        case TypeCode.Int16:
+                            dt.Columns.Add(colName, typeof(short));
+                            break;
+                        case TypeCode.Int32:
+                            dt.Columns.Add(colName, typeof(int));
+                            break;
+                        case TypeCode.Int64:
+                            dt.Columns.Add(colName, typeof(long));
+                            break;
+                        case TypeCode.Single:
+                            dt.Columns.Add(colName, typeof(float));
+                            break;
+                        case TypeCode.String:
+                            dt.Columns.Add(colName, typeof(string));
+                            break;
+                        default:
+                            dt.Columns.Add(colName);
+                            break;
+                    }
+                }
+
+                int RowCount = buff.ReadInt();
+
+                dt.BeginLoadData();
+
+                for (int i = 0; i < RowCount; i++)
+                {
+                    //DataRow dr = dt.NewRow();
+                    object[] obj = new object[ColumnCount];
+                    for (int y = 0; y < ColumnCount; y++)
+                    {
+                        TypeCode type = (TypeCode)buff.ReadByte();
+
+                        switch (type)
+                        {
+                            case TypeCode.Byte:
+                            case TypeCode.Boolean:
+                                obj[y] = buff.ReadByte();
+                                break;
+                            case TypeCode.String:
+                                obj[y] = buff.ReadString(buff.ReadInt());
+                                break;
+                            case TypeCode.Int16:
+                                obj[y] = BitConverter.ToInt16(buff.ReadByteArray(2), 0);
+                                break;
+                            case TypeCode.Int32:
+                                obj[y] = buff.ReadInt();
+                                break;
+                            case TypeCode.Int64:
+                                obj[y] = buff.ReadLong();
+                                break;
+                            case TypeCode.Single:
+                                obj[y] = buff.ReadFloat();
+                                break;
+                            case TypeCode.Double:
+                                obj[y] = BitConverter.ToDouble(buff.ReadByteArray(8), 0);
+                                break;
+                            case TypeCode.Decimal:
+                                obj[y] = buff.ReadDecimal();
+                                break;
+                            case TypeCode.DBNull:
+                                obj[y] = DBNull.Value;
+                                break;
+                            case TypeCode.DateTime:
+                                obj[y] = DateTime.FromBinary(buff.ReadLong());
+                                break;
+                            default:
+                                obj[y] = null;
+                                break;
+                        }
+                    }
+                    dt.Rows.Add(obj);
+                }
+
+                dt.EndLoadData();
+
+                if (RowCount > 0)
+                    dt.AcceptChanges();
+            }
+
+            return dt;
+        }
+
+        /// <summary>
+        /// Compress data, make sure you check the size. the stream might be compressed already.
+        /// </summary>
+        /// <param name="raw"></param>
+        /// <param name="data"></param>
+        public static void Compress(ref byte[] raw, out byte[] data)
+        {
+            using (MemoryStream memory = new MemoryStream())
+            {
+                using (GZipStream gzip = new GZipStream(memory,
+                CompressionMode.Compress, true))
+                {
+                    gzip.Write(raw, 0, raw.Length);
+                }
+                data = memory.ToArray();
+            }
+        }
+
+        public static void Decompress(ref byte[] gzip, out byte[] data)
+        {
+            // Create a GZIP stream with decompression mode.
+            // ... Then create a buffer and write into while reading from the GZIP stream.
+            using (GZipStream stream = new GZipStream(new MemoryStream(gzip), CompressionMode.Decompress))
+            {
+                const int size = 4096;
+                byte[] buffer = new byte[size];
+                using (MemoryStream memory = new MemoryStream())
+                {
+                    int count = 0;
+                    do
+                    {
+                        count = stream.Read(buffer, 0, size);
+                        if (count > 0)
+                        {
+                            memory.Write(buffer, 0, count);
+                        }
+                    }
+                    while (count > 0);
+                    data = memory.ToArray();
+                }
+            }
+        }
+
+        /// <summary>
+        ///  Datatable to Buffer
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="buff"></param>
+        public static void ConvertDataTableToBuffer(DataTable result, ref BinaryBuffer buff)
+        {            
+            DataTable dt = (DataTable)result;
+            buff.Write(dt.Columns.Count);
+            TypeCode[] types = new TypeCode[dt.Columns.Count];
+
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                buff.WriteField(dt.Columns[i].ColumnName);
+                types[i] = Type.GetTypeCode(dt.Columns[i].DataType);
+                buff.Write((byte)types[i]);
+            }
+
+            buff.Write(dt.Rows.Count);
+            for (int y = 0; y < dt.Rows.Count; y++)
+            {
+                DataRow dr = dt.Rows[y];
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    // we need to get the typecode, depending on what type code we set the bytes...
+                    object value = dr[i];
+                    TypeCode type = ((IConvertible)value).GetTypeCode();
+                    buff.Write((byte)type);
+
+                    switch (type)
+                    {
+                        case TypeCode.Byte:
+                        case TypeCode.Boolean:
+                            buff.Write((byte)value);
+                            break;
+                        case TypeCode.String:
+                            buff.WriteField((string)value);
+                            break;
+                        case TypeCode.Int16:
+                            buff.Write(BitConverter.GetBytes((short)value));
+                            break;
+                        case TypeCode.Int32:
+                            buff.Write((int)value);
+                            break;
+                        case TypeCode.Int64:
+                            buff.Write((long)value);
+                            break;
+                        case TypeCode.Single:
+                            buff.Write((float)value);
+                            break;
+                        case TypeCode.Double:
+                            buff.Write(BitConverter.GetBytes((double)value));
+                            break;
+                        case TypeCode.Decimal:
+                            buff.Write((decimal)value);
+                            break;
+                        case TypeCode.DBNull:
+                            //buff.Write((double)value);
+                            break;
+                        case TypeCode.DateTime:
+                            buff.Write(((DateTime)value).ToBinary());
+                            break;
+                    }
+                }
+            }
         }
     }
 }

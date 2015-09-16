@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +23,76 @@ namespace cSharpServer
             return new MySqlConnection(String.Format(Str0002, CurrentServer.DataSource,
             CurrentServer.DataPort, CurrentServer.DataUser,
             CurrentServer.DataPass)); //neo
+        }
+
+        /// <summary>
+        /// Write data to the Client.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="stream"></param>
+        public static void WriteBuffer(byte[] data, NetworkStream stream)
+        {
+            int length = data.Length;
+            int bytesRead = 1;
+            byte[] buffer = new byte[8192];
+            stream.Write(BitConverter.GetBytes(length), 0, 4);
+
+            using (MemoryStream ms = new MemoryStream(data))
+            {
+                while (length > 0 && bytesRead > 0)
+                {
+                    bytesRead = ms.Read(buffer, 0, Math.Min(length, buffer.Length));
+                    stream.Write(buffer, 0, bytesRead);
+                    length -= bytesRead;
+                }
+            }
+            stream.Flush();
+        }
+
+        /// <summary>
+        /// Read the data from the client.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public static byte[] ReadBuffer(NetworkStream stream)
+        {
+            BinaryBuffer buff = new BinaryBuffer();
+
+            buff.BeginWrite();
+
+            int read = -1;
+            int i = 0;
+
+            while ((read = stream.ReadByte()) != -1)
+            {
+                buff.Write((byte)read);
+                if (i++ == 3)
+                    break;
+            }
+
+            buff.EndWrite();
+
+            if (buff.ByteBuffer.Length != 4)
+                return new byte[] { };
+
+            int Contentlength = BitConverter.ToInt32(buff.ByteBuffer, 0);
+
+            buff = new BinaryBuffer();
+
+            int bytesRead = 1;
+            byte[] buffer = new byte[8192];
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                while (Contentlength > 0 && bytesRead > 0)
+                {
+                    bytesRead = stream.Read(buffer, 0, Math.Min(Contentlength, buffer.Length));
+                    ms.Write(buffer, 0, bytesRead);
+                    Contentlength -= bytesRead;
+                }
+                stream.Flush();
+                return ms.ToArray();
+            }
         }
 
         public static bool sql_Connect(ref MySqlConnection connection)
