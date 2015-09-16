@@ -39,9 +39,13 @@ namespace cSharpServer
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public BinaryBuffer(byte[] data)
+        public BinaryBuffer(byte[] data, bool openRead = false)
             : this(ref data)
         {
+            if(openRead)
+            {
+                this.BeginRead();
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

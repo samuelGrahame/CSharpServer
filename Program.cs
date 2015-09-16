@@ -12,7 +12,7 @@ namespace cSharpServer
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
-        {            
+        {
             Database.CurrentServer = new Server();
             Database.CurrentServer.Start();
 

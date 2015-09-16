@@ -27,6 +27,11 @@ namespace cSharpServer
         public Server CurrentServer;
 
         /// <summary>
+        /// Store custom data for the user.
+        /// </summary>
+        public List<ClientArgument> Arguments = new List<ClientArgument>();
+
+        /// <summary>
         /// Write data to the Client.
         /// </summary>
         /// <param name="data"></param>

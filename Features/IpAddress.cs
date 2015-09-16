@@ -9,20 +9,20 @@ namespace cSharpServer.Features
 {
     public class IpAddress : IAddressEqual
     {
-        public IpAddress(int value)
+        public IpAddress(uint value)
         {
             this.Value = value;
         }
         public IpAddress(string value)
         {
             string[] array = value.Split('.');
-            this.Value = BitConverter.ToInt32(new byte[] {
-                byte.Parse(array[1]), 
-                byte.Parse(array[2]),
+            this.Value = BitConverter.ToUInt32(new byte[] {
+                byte.Parse(array[4]), 
                 byte.Parse(array[3]),
-                byte.Parse(array[4])}, 0);
+                byte.Parse(array[2]),
+                byte.Parse(array[1])}, 0);
         }
-        public int Value;
+        public uint Value;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool EqualOrInRange(IAddressEqual address)

@@ -15,6 +15,61 @@ namespace cSharpServer
         public object Value;
         public byte Type;
 
+        public int GetInt()
+        {
+            return (int)Value;
+        }
+
+        public long GetLong()
+        {
+            return (long)Value;
+        }
+
+        public short GetShort()
+        {
+            return (short)Value;
+        }
+
+        public string GetString()
+        {
+            return (string)Value;
+        }
+
+        public float GetFloat()
+        {
+            return (float)Value;
+        }
+
+        public double GetDouble()
+        {
+            return (double)Value;
+        }
+
+        public decimal GetDecimal()
+        {
+            return (decimal)Value;
+        }
+
+        public DateTime GetDateTime()
+        {
+            return (DateTime)Value;
+        }
+
+        public byte[] GetBlob()
+        {
+            return (byte[])Value;
+        }
+
+        public object GetObject()
+        {
+            return Value;
+        }
+
+        public bool IsNull()
+        {
+            return Value == null;
+        }
+
         public ClientArgument(string name, byte type, byte[] data)
         {
             this.Name = name;
