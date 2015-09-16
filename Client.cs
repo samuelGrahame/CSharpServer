@@ -31,6 +31,27 @@ namespace cSharpServer
         /// </summary>
         public List<ClientArgument> Arguments = new List<ClientArgument>();
 
+        public void GetArgument(string Name, out string Value)
+        {
+            for(int i = 0, y = Arguments.Count; i < y; i++)
+                if(string.Compare(Name, Arguments[i].Name) == 0)
+                {
+                    Value = Arguments[i].GetString();
+                    return;
+                }           
+            Value = string.Empty;
+        }
+        public void GetArgument(string Name, out int Value)
+        {
+            for (int i = 0, y = Arguments.Count; i < y; i++)
+                if (string.Compare(Name, Arguments[i].Name) == 0)
+                {
+                    Value = Arguments[i].GetInt();
+                    return;
+                }
+            Value = 0;
+        }
+
         /// <summary>
         /// Write data to the Client.
         /// </summary>
