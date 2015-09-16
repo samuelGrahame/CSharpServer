@@ -70,6 +70,21 @@ namespace cSharpServer
             return Value == null;
         }
 
+        public enum ClientArgumentTypes
+        {
+            _Byte,
+            _Short,
+            _Int,
+            _Long,
+            _Float,
+            _Double,
+            _Decimal,
+            _DateTime,
+            _String,
+            _Blob,
+            _None           
+        }
+
         public ClientArgument(string name, byte type, byte[] data)
         {
             this.Name = name;
