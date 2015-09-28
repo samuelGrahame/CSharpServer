@@ -163,10 +163,6 @@ namespace cSharpServer
 
             if (sql_Connect(ref connection))
             {
-                if (!value.StartsWith(string.Format("USE `{0}`;", CurrentServer.DataSchema)))
-                {
-                    value = string.Format("USE `{0}`;{1}", CurrentServer.DataSchema, value);
-                }
                 MySqlCommand mcMysqlCommand = new MySqlCommand(value, connection);
 
                 for (int i = 0; i < args.Length; i += 2)
@@ -219,10 +215,6 @@ namespace cSharpServer
 
             if (sql_Connect(ref connection))
             {
-                if (!value.StartsWith(string.Format("USE `{0}`;", CurrentServer.DataSchema)))
-                {
-                    value = string.Format("USE `{0}`;{1}", CurrentServer.DataSchema, value);
-                }
                 MySqlCommand mcMysqlCommand = new MySqlCommand(value, connection);
 
                 for (int i = 0; i < args.Length; i += 2)
@@ -275,10 +267,6 @@ namespace cSharpServer
 
         public static bool SetDataTable(string value, MySqlConnection connection, bool EnforceDatabase = true, bool useParentConnection = false, params string[] args)
         {
-            if (!value.StartsWith(string.Format("USE `{0}`;", CurrentServer.DataSchema)))
-            {
-                value = string.Format("USE `{0}`;{1}", CurrentServer.DataSchema, value);
-            }
             if (sql_Connect(ref connection))
             {
                 MySqlCommand mcMysqlCommand = new MySqlCommand(value, connection);
@@ -329,10 +317,6 @@ namespace cSharpServer
         params string[] args)
         {
             id = 0;
-            if (!value.StartsWith(string.Format("USE `{0}`;", CurrentServer.DataSchema)))
-            {
-                value = string.Format("USE `{0}`;{1}", CurrentServer.DataSchema, value);
-            }
             if (sql_Connect(ref connection))
             {
                 MySqlCommand mcMysqlCommand = new MySqlCommand(value, connection);
@@ -395,14 +379,6 @@ namespace cSharpServer
                 {
                     for (int f = 0; value.Length > f; f++)
                     {
-                        if (f == 0)
-                        {
-                            if (!value[f].StartsWith(string.Format("USE `{0}`;", CurrentServer.DataSchema)))
-                            {
-                                value[f] = string.Format("USE `{0}`;{1}", CurrentServer.DataSchema, value[f]);
-                            }
-                        }
-
                         MySqlCommand mcMysqlCommand = new MySqlCommand(value[f], connection);
 
                         for (int i = 0; i < args.Length; i += 2)
