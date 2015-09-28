@@ -9,7 +9,7 @@ namespace cSharpServer
         /// <summary>
         /// this needs to be set, otherwise the server will not beable to handle the request.
         /// </summary>
-        byte IdType { get; set; } // This is used for Execution.
+        byte IdType { get; } // This is used for Execution.
         /// <summary>
         /// handle the process by the client.
         /// </summary>
